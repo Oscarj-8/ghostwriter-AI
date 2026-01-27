@@ -74,7 +74,22 @@ export async function POST(req: Request) {
     const ai = JSON.parse(cleanedJson);
 
     const targetEmails = ai.decision === "sellers" ? sellers : buyers;
-    console.log("Targeting ", targetEmails);
+
+    const { error: logError } = await supabase.from("agent_logs").insert([
+      {
+        event_type: "Daily Market Scan",
+        audience: ai.decision, 
+        news_summary: ai.subject, 
+        ai_reasoning: ai.reasoning,
+        confidence_score: ai.confidence,
+        status:
+          isAutoPilotActive && ai.confidence > 70 ? "Auto-Sent" : "Drafted",
+        subject: ai.subject,
+        body: ai.body,
+      },
+    ]);
+
+    if (logError) console.error("Logging failed:", logError);
 
     const recipientArray = targetEmails
       .split(",")
@@ -82,6 +97,7 @@ export async function POST(req: Request) {
       .filter((e: string) => e.includes("@"));
 
     let status = "Drafted & Waiting Review";
+    
     if (isAutoPilotActive && ai.confidence > 50 && recipientArray.length > 0) {
       console.log("Sending email via Resend...");
       const { error } = await resend.emails.send({
@@ -93,7 +109,6 @@ export async function POST(req: Request) {
       });
       if (error) throw new Error(error.message);
 
-      status = "Autonomously Sent via Resend";
       status = "Autonomously Sent to " + recipientArray.length + " recipients";
     }
 

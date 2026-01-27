@@ -12,6 +12,7 @@ import { supabase } from "@/lib/supabase/client";
 import AutoPilot from "@/components/auto-pilot";
 import MainHeader from "@/components/main-header";
 import { toast } from "sonner";
+import AgentActivityFeed from "@/components/agent-activity-feed";
 
 export default function AgentDashboard() {
   const [sellers, setSellers] = useState("");
@@ -175,6 +176,7 @@ export default function AgentDashboard() {
           )}
         </div>
       </div>
+      <AgentActivityFeed />
     </div>
   );
 }
