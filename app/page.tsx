@@ -11,6 +11,7 @@ import MarketScanner from "@/components/market-scanner";
 import { supabase } from "@/lib/supabase/client";
 import AutoPilot from "@/components/auto-pilot";
 import MainHeader from "@/components/main-header";
+import { toast } from "sonner";
 
 export default function AgentDashboard() {
   const [sellers, setSellers] = useState("");
@@ -39,7 +40,7 @@ export default function AgentDashboard() {
       .update({ emails: buyers })
       .eq("type", "buyer");
     setLoading(false);
-    alert("Database Updated!");
+    toast.success("List of emails Updated!");
   };
 
   const triggerAgent = async () => {
@@ -72,9 +73,9 @@ export default function AgentDashboard() {
 
     if (result.success) {
       setLogs({ ...logs, status: "Sent Manually (Approved)" });
-      alert("Email sent successfully!");
+      toast.success("Email sent successfully!");
     } else {
-      alert("Failed to send: " + result.error);
+      toast.error("Failed to send email:", result.error);
     }
     setIsSending(false);
   };

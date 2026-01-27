@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Label } from "./ui/label";
 import { supabase } from "@/lib/supabase/client";
 import { Switch } from "./ui/switch";
+import { toast } from "sonner";
 
 const AutoPilot = () => {
   const [autoPilot, setAutoPilot] = useState(false);
@@ -27,7 +28,7 @@ const AutoPilot = () => {
       .update({ auto_pilot: !autoPilot })
       .eq("id", 1);
     setLoading(false);
-    alert("Auto Pilot Updated!");
+    toast.success("Agent Autonomy Updated!", { position: "top-center" });
   };
 
   return (
