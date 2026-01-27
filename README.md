@@ -70,7 +70,7 @@ The agent:
 
 ---
 
-## 🚀 Why Mela Intelligence?
+## 🚀 Why Ghostwriter-AI?
 
 Ghostwriter AI transforms raw market data into **actionable, personalized communication**, allowing realtors to:
 - Stay ahead of market shifts
