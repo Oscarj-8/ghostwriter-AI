@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ShieldCheck,} from "lucide-react";
 import { Button } from "@/components/ui/button";
-
+import { Separator } from "@/components/ui/separator";
 interface ClientsDBProps {
   sellers: string
   setSellers: React.Dispatch<React.SetStateAction<string>>
@@ -26,6 +26,7 @@ const ClientsDB = ({
           <ShieldCheck className="w-5 h-5 text-green-600" /> Client Database
         </CardTitle>
       </CardHeader>
+      <Separator />
       <CardContent className="space-y-4">
         <div>
           <Label className="text-base">Sellers (Emails)</Label>

@@ -9,19 +9,19 @@ interface MarketScannerProps {
 
 const MarketScanner = ({ triggerAgent, loading }: MarketScannerProps) => {
   return (
-    <Card className="border-2 border-black">
-      <CardContent className="pt-6">
+    <Card className="border border-gray-200">
+      <CardContent className="">
         <Button
           onClick={triggerAgent}
           disabled={loading}
-          className="w-full h-16 text-lg font-bold"
+          className="w-full h-12 text-lg font-bold"
         >
           {loading ? (
             <Loader2 className="animate-spin mr-2" />
           ) : (
             <Play className="mr-2 fill-current" />
           )}
-          TRIGGER MORNING MARKET SCAN
+          SCAN MARKET
         </Button>
       </CardContent>
     </Card>
