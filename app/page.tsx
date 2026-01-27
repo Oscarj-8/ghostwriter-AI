@@ -83,10 +83,10 @@ export default function AgentDashboard() {
       <div className="flex justify-between items-center border-b pb-6">
         <div>
           <h1 className="text-4xl font-extrabold tracking-tight">
-            RealEstate.AI
+            Ghostwriter.AI
           </h1>
           <p className="text-muted-foreground mt-1">
-            Autonomous Marketing Agent
+            Autonomous Marketing Agent for Real Estate Agents
           </p>
         </div>
         <AutoPilot />
