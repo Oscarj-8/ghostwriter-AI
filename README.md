@@ -1,6 +1,6 @@
-# 🤖 Mela Intelligence — Autonomous Real Estate Agent
+# 🤖 Ghostwriter-AI — Autonomous Real Estate Agent
 
-**Mela Intelligence** is a production-ready, autonomous AI agent designed for realtors to bridge the gap between global market shifts and client communication.
+**Ghostwriter-AI** is a production-ready, autonomous AI agent designed for realtors to bridge the gap between global market shifts and client communication.
 
 It monitors the real estate market 24/7, analyzes news with professional-grade reasoning, and executes high-impact outreach strategies — either fully autonomously or with human oversight.
 
@@ -36,7 +36,7 @@ Migrated from browser-local storage to a centralized **Supabase PostgreSQL** bac
 
 | Layer        | Technology                    | Purpose |
 |-------------|-------------------------------|--------|
-| Framework   | Next.js 15 (App Router)        | Modern full-stack architecture with Server Actions |
+| Framework   | Next.js 16 (App Router)        | Modern full-stack architecture with Server Actions |
 | Intelligence| Google Gemini 1.5 Flash        | Context-aware market analysis and professional drafting |
 | Database    | Supabase (PostgreSQL)          | Centralized storage for contacts, settings, and agent history |
 | Email API   | Resend                         | High-deliverability transactional email service |
@@ -72,7 +72,7 @@ The agent:
 
 ## 🚀 Why Mela Intelligence?
 
-Mela Intelligence transforms raw market data into **actionable, personalized communication**, allowing realtors to:
+Ghostwriter AI transforms raw market data into **actionable, personalized communication**, allowing realtors to:
 - Stay ahead of market shifts
 - Communicate consistently and professionally
 - Scale client outreach without losing human control
