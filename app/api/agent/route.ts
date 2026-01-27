@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       )
       .join("\n");
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
     const prompt = `
       You are an Autonomous Real Estate Strategist. 
       Analyze this news: "${newsSummary}"
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
 
     let status = "Drafted & Waiting Review";
     
-    if (isAutoPilotActive && ai.confidence > 50 && recipientArray.length > 0) {
+    if (isAutoPilotActive && ai.confidence > 70 && recipientArray.length > 0) {
       console.log("Sending email via Resend...");
       const { error } = await resend.emails.send({
         from: `Abdulahi Muhammed <contact@melajobs.com>`,

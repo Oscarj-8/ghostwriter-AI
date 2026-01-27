@@ -167,7 +167,7 @@ export default function AgentDashboard() {
               <Button
                 onClick={() => setLogs(null)}
                 variant="outline"
-                className="flex-1 border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600"
+                className="flex-1 border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 h-12"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 DISCARD
