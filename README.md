@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🤖 Mela Intelligence — Autonomous Real Estate Agent
 
-## Getting Started
+**Mela Intelligence** is a production-ready, autonomous AI agent designed for realtors to bridge the gap between global market shifts and client communication.
 
-First, run the development server:
+It monitors the real estate market 24/7, analyzes news with professional-grade reasoning, and executes high-impact outreach strategies — either fully autonomously or with human oversight.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🌟 Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 🕗 Morning Market Scan
+An automated daily **“heartbeat”** that triggers a full market intelligence sweep at **8:00 AM**.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### ⚙️ Dual-Mode Operation
+- **Auto-Pilot Mode**  
+  High-confidence insights are sent directly to clients using a pre-verified **Resend** email infrastructure.
 
-## Learn More
+- **Human-in-the-Loop (HITL)**  
+  Low-confidence or sensitive insights are generated as drafts for the realtor to **review, edit, or approve** before sending.
 
-To learn more about Next.js, take a look at the following resources:
+### 🧠 AI Reasoning Engine
+Powered by **Google Gemini 1.5 Flash**, the agent:
+- Analyzes real-estate-related news
+- Categorizes impact specifically for **Buyers** or **Sellers**
+- Assigns a **Confidence Score** to each insight
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### ☁️ Cloud-Synchronized CRM
+Migrated from browser-local storage to a centralized **Supabase PostgreSQL** backend, enabling:
+- Cross-device persistence
+- Headless, autonomous execution
+- Secure storage of contacts, settings, and agent history
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🛠 Technical Stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Layer        | Technology                    | Purpose |
+|-------------|-------------------------------|--------|
+| Framework   | Next.js 15 (App Router)        | Modern full-stack architecture with Server Actions |
+| Intelligence| Google Gemini 1.5 Flash        | Context-aware market analysis and professional drafting |
+| Database    | Supabase (PostgreSQL)          | Centralized storage for contacts, settings, and agent history |
+| Email API   | Resend                         | High-deliverability transactional email service |
+| Automation  | Google Apps Script             | Serverless daily cron job for autonomous scans |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 📐 System Architecture
+
+### 1️⃣ Trigger
+At **8:00 AM**, a **Google Apps Script** sends a secure `POST` request to the Next.js API endpoint.
+
+### 2️⃣ Context Fetch
+The agent retrieves:
+- Client contact emails
+- `agent_settings` (Auto-Pilot status)
+from **Supabase**.
+
+### 3️⃣ Intelligence
+The agent:
+- Fetches real-estate news from **NewsData.io**
+- Uses **Gemini** to determine:
+  - Which client segment is affected (**Buyers vs. Sellers**)
+  - The **Confidence Score** of the insight
+
+### 4️⃣ Action
+- **If Auto-Pilot is ON** and **Confidence > 70%**  
+  → Sends the email automatically via **Resend**
+- **Otherwise**  
+  → Saves a draft to the **Activity Feed** for manual approval using a **Server Action**
+
+---
+
+## 🚀 Why Mela Intelligence?
+
+Mela Intelligence transforms raw market data into **actionable, personalized communication**, allowing realtors to:
+- Stay ahead of market shifts
+- Communicate consistently and professionally
+- Scale client outreach without losing human control
+
+---
+
