@@ -3,31 +3,42 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { sendManualEmail } from "@/app/actions/email";
-import { Label } from "@/components/ui/label";
 import { Loader2, Trash2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import ClientsDB from "@/components/ui/clients-db";
 import MarketScanner from "@/components/market-scanner";
+import { supabase } from "@/lib/supabase/client";
+import AutoPilot from "@/components/auto-pilot";
 
 export default function AgentDashboard() {
   const [sellers, setSellers] = useState("");
   const [buyers, setBuyers] = useState("");
-  const [autoPilot, setAutoPilot] = useState(false);
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState<any>(null);
   const [isSending, setIsSending] = useState(false);
 
   useEffect(() => {
-    setSellers(localStorage.getItem("sellers-list") || "");
-    setBuyers(localStorage.getItem("buyers-list") || "");
+    const loadData = async () => {
+      const { data } = await supabase.from("contacts").select("*");
+      setSellers(data?.find((c) => c.type === "seller")?.emails || "");
+      setBuyers(data?.find((c) => c.type === "buyer")?.emails || "");
+    };
+    loadData();
   }, []);
 
-  const saveLists = () => {
-    localStorage.setItem("sellers-list", sellers);
-    localStorage.setItem("buyers-list", buyers);
-    alert("Client lists saved to local storage!");
+  const saveToSupabase = async () => {
+    setLoading(true);
+    await supabase
+      .from("contacts")
+      .update({ emails: sellers })
+      .eq("type", "seller");
+    await supabase
+      .from("contacts")
+      .update({ emails: buyers })
+      .eq("type", "buyer");
+    setLoading(false);
+    alert("Database Updated!");
   };
 
   const triggerAgent = async () => {
@@ -36,7 +47,6 @@ export default function AgentDashboard() {
       const res = await fetch("/api/agent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sellers, buyers, autoPilot }),
       });
       const data = await res.json();
       setLogs(data);
@@ -79,30 +89,22 @@ export default function AgentDashboard() {
             Autonomous Marketing Agent
           </p>
         </div>
-        <div className="flex items-center gap-4 bg-slate-100 p-4 rounded-xl border">
-          <div className="flex flex-col items-end">
-            <Label className="font-bold text-xs uppercase mb-1">
-              Agent Autonomy
-            </Label>
-            <div className="flex items-center gap-2">
-              <span
-                className={`text-xs font-medium ${autoPilot ? "text-green-600" : "text-slate-500"}`}
-              >
-                {autoPilot ? "AUTO-PILOT ACTIVE" : "MANUAL REVIEW"}
-              </span>
-              <Switch checked={autoPilot} onCheckedChange={setAutoPilot} />
-            </div>
-          </div>
-        </div>
+        <AutoPilot />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1 space-y-6">
-      <ClientsDB sellers={sellers} setSellers={setSellers} buyers={buyers} setBuyers={setBuyers} saveLists={saveLists}  />
+          <ClientsDB
+            sellers={sellers}
+            setSellers={setSellers}
+            buyers={buyers}
+            setBuyers={setBuyers}
+            saveLists={saveToSupabase}
+          />
         </div>
 
         <div className="lg:col-span-2 space-y-6">
-         <MarketScanner triggerAgent={triggerAgent} loading={loading} />  
+          <MarketScanner triggerAgent={triggerAgent} loading={loading} />
 
           {logs && (
             <Card className="bg-slate-900 text-white overflow-hidden animate-in fade-in slide-in-from-bottom-4">
@@ -150,7 +152,7 @@ export default function AgentDashboard() {
               </CardContent>
             </Card>
           )}
-          
+
           {logs && logs.status === "Drafted & Waiting Review" && (
             <div className="flex gap-4">
               <Button

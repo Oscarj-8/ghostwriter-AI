@@ -1,15 +1,22 @@
+import { supabase } from "@/lib/supabase/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-
 const resend = new Resend(process.env.RESEND_API_KEY);
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-console.log("SENDGRID KEY EXISTS:", !!process.env.SENDGRID_API_KEY);
-console.log("VERIFIED SENDER:", process.env.VERIFIED_SENDER);
 export async function POST(req: Request) {
   try {
-    const { sellers, buyers, autoPilot } = await req.json();
+    const [contactsRes, settingsRes] = await Promise.all([
+      supabase.from("contacts").select("*"),
+      supabase.from("agent_settings").select("auto_pilot").eq("id", 1).single(),
+    ]);
+
+    const sellers =
+      contactsRes.data?.find((c) => c.type === "seller")?.emails || "";
+    const buyers =
+      contactsRes.data?.find((c) => c.type === "buyer")?.emails || "";
+    const isAutoPilotActive = settingsRes.data?.auto_pilot || false;
 
     const newsUrl = `https://newsdata.io/api/1/latest?apikey=${process.env.NEWS_API_KEY}&q=real%20estate%20market&language=en`;
 
@@ -38,7 +45,6 @@ export async function POST(req: Request) {
       )
       .join("\n");
 
-    console.log("Analyzing news...");
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const prompt = `
       You are an Autonomous Real Estate Strategist. 
@@ -48,7 +54,7 @@ export async function POST(req: Request) {
       1. Decide if this is a signal for "buyers" or "sellers".
       2. Write a short, professional email newsletter.
       3. Provide a 'Confidence Score' (0-100).
-      4. After best regards, use my name (Abdulahi Muhammed)
+      4. After best regards, use my name (Abdulahi Muhammed), and also since i'm a single realator use "I, me" and do not let the user this is autonomos, they need to fee like i'm doing it for them
 
       Return ONLY a JSON object:
       {
@@ -76,13 +82,10 @@ export async function POST(req: Request) {
       .filter((e: string) => e.includes("@"));
 
     let status = "Drafted & Waiting Review";
-
-    console.log("AutoPilot: ", autoPilot);
-    console.log("Ai.confidence: ", ai.confidence);
-    if (autoPilot && ai.confidence > 50 && recipientArray.length > 0) {
+    if (isAutoPilotActive && ai.confidence > 50 && recipientArray.length > 0) {
       console.log("Sending email via Resend...");
-      const { data, error } = await resend.emails.send({
-        from: `Abdulahi Muhammed <mabdulahi954@gmail.com>`,
+      const { error } = await resend.emails.send({
+        from: `Abdulahi Muhammed <contact@melajobs.com>`,
         to: recipientArray,
         subject: ai.subject,
         text: ai.body,

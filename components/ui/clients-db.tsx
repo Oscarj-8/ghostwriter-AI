@@ -52,7 +52,7 @@ const ClientsDB = ({
           />
         </div>
         <Button onClick={saveLists} variant="default" className="w-full">
-          Save to LocalStorage
+          Save
         </Button>
       </CardContent>
     </Card>
