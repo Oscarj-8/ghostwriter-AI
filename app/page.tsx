@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { sendManualEmail } from "@/app/actions/email";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Loader2, Play, ShieldCheck, Trash2, Zap } from "lucide-react";
+import { Loader2, Trash2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import ClientsDB from "@/components/ui/clients-db";
+import MarketScanner from "@/components/market-scanner";
 
 export default function AgentDashboard() {
   const [sellers, setSellers] = useState("");
@@ -97,55 +98,11 @@ export default function AgentDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1 space-y-6">
-          <Card>
-            <CardHeader className="bg-slate-50">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4" /> Client Database
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-4">
-              <div>
-                <Label>Sellers (Emails)</Label>
-                <Textarea
-                  value={sellers}
-                  onChange={(e) => setSellers(e.target.value)}
-                  placeholder="email1@test.com, email2@test.com"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label>Buyers (Emails)</Label>
-                <Textarea
-                  value={buyers}
-                  onChange={(e) => setBuyers(e.target.value)}
-                  placeholder="email3@test.com, email4@test.com"
-                  className="mt-1"
-                />
-              </div>
-              <Button onClick={saveLists} variant="outline" className="w-full">
-                Save to LocalStorage
-              </Button>
-            </CardContent>
-          </Card>
+      <ClientsDB sellers={sellers} setSellers={setSellers} buyers={buyers} setBuyers={setBuyers} saveLists={saveLists}  />
         </div>
 
         <div className="lg:col-span-2 space-y-6">
-          <Card className="border-2 border-black">
-            <CardContent className="pt-6">
-              <Button
-                onClick={triggerAgent}
-                disabled={loading}
-                className="w-full h-16 text-lg font-bold"
-              >
-                {loading ? (
-                  <Loader2 className="animate-spin mr-2" />
-                ) : (
-                  <Play className="mr-2 fill-current" />
-                )}
-                TRIGGER MORNING MARKET SCAN
-              </Button>
-            </CardContent>
-          </Card>
+         <MarketScanner triggerAgent={triggerAgent} loading={loading} />  
 
           {logs && (
             <Card className="bg-slate-900 text-white overflow-hidden animate-in fade-in slide-in-from-bottom-4">
