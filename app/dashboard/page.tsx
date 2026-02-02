@@ -13,6 +13,7 @@ import AutoPilot from "@/components/auto-pilot";
 import MainHeader from "@/components/main-header";
 import { toast } from "sonner";
 import AgentActivityFeed from "@/components/agent-activity-feed";
+import { logout } from "../actions/login";
 
 export default function AgentDashboard() {
   const [sellers, setSellers] = useState("");
@@ -85,7 +86,12 @@ export default function AgentDashboard() {
     <div className="max-w-6xl mx-auto p-8 space-y-8">
       <div className="flex flex-col md:flex-row items-start justify-between gap-2 md:items-center border-b pb-6">
         <MainHeader />
-        <AutoPilot />
+        <div className="flex flex-col items-center gap-2">
+          <AutoPilot />
+          <form action={logout}>
+            <Button variant="outline">Sign Out</Button>
+          </form>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
