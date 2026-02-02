@@ -20,7 +20,7 @@ export async function sendManualEmail(
       .filter((e) => e.includes("@"));
 
     const { data, error } = await resend.emails.send({
-      from: `Mela Intelligence <${process.env.VERIFIED_SENDER}>`,
+      from: `Abdulahi Muhammed <${process.env.VERIFIED_SENDER}>`,
       to: recipientArray,
       subject: subject,
       text: body,
