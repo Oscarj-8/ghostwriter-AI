@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase/server";
+import { supabase } from "@/lib/supabase/admin";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
