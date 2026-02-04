@@ -1,32 +1,55 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { Label } from "./ui/label";
 import { supabase } from "@/lib/supabase/client";
 import { Switch } from "./ui/switch";
 import { toast } from "sonner";
+import { User } from "@supabase/supabase-js";
 
 const AutoPilot = () => {
   const [autoPilot, setAutoPilot] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const fetchSettings = async () => {
-      const { data } = await supabase
+    const initialize = async () => {
+      const {
+        data: { user: authUser },
+        error: authError,
+      } = await supabase.auth.getUser();
+
+      if (authError || !authUser) {
+        console.log("No session found");
+        return;
+      }
+
+      setUser(authUser);
+      const { data, error } = await supabase
         .from("agent_settings")
         .select("auto_pilot")
-        .eq("id", 1)
+        .eq("user_id", authUser.id)
         .single();
+
+       if (error) {
+         console.error("Error fetching settings:", error.message);
+         return;
+       }
+
       if (data) setAutoPilot(data.auto_pilot);
     };
-    fetchSettings();
+
+    initialize();
   }, []);
 
-    const saveAutoPilot = async () => {
+  const saveAutoPilot = async () => {
+    if (!user) return;
     setLoading(true);
     setAutoPilot(!autoPilot);
     await supabase
       .from("agent_settings")
       .update({ auto_pilot: !autoPilot })
-      .eq("id", 1);
+      .eq("user_id", user?.id);
     setLoading(false);
     toast.success("Agent Autonomy Updated!", { position: "top-center" });
   };
@@ -43,7 +66,11 @@ const AutoPilot = () => {
           >
             {autoPilot ? "AUTO-PILOT ACTIVE" : "MANUAL REVIEW"}
           </span>
-          <Switch disabled={loading} checked={autoPilot} onCheckedChange={saveAutoPilot} />
+          <Switch
+            disabled={loading}
+            checked={autoPilot}
+            onCheckedChange={saveAutoPilot}
+          />
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-'use server'
+"use server";
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
@@ -6,18 +6,44 @@ import { redirect } from "next/navigation";
 export async function signup(formData: FormData) {
   const supabase = await createClient();
 
-  const data = {
-    email: formData.get("email") as string,
-    password: formData.get("password") as string,
-  };
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
 
-  console.log("data", data);
+  const { data: authData, error: authError } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+  if (authError || !authData.user) {
+    console.error("Auth Error:", authError?.message);
+    redirect(
+      `/register?message=${encodeURIComponent(authError?.message || "Could not create user")}`,
+    );
+  }
 
-  const { error } = await supabase.auth.signUp(data);
+  const userId = authData.user.id;
 
-  console.log("error", error);
+  const { error: settingsError } = await supabase
+    .from("agent_settings")
+    .insert([
+      {
+        user_id: userId,
+        auto_pilot: false,
+      },
+    ]);
 
-  if (error) redirect("/register?message=Could not create user");
+  if (settingsError) {
+    console.error("Manual Settings Insert Error:", settingsError.message);
+  }
 
-  return redirect("/login?message=Check your email to confirm your account");
+  const { error: contactsError } = await supabase.from("contacts").insert([
+    { user_id: userId, type: "buyer", emails: "" },
+    { user_id: userId, type: "seller", emails: "" },
+  ]);
+
+  if (contactsError) {
+    console.error("Manual Contacts Insert Error:", contactsError.message);
+  }
+  return redirect(
+    "/login?message=Account created! Please check your email to confirm.",
+  );
 }
