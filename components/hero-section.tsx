@@ -1,6 +1,7 @@
 import React from "react";
 import AuthButton from "./auth-button";
 import { createClient } from "@/lib/supabase/server";
+import Image from "next/image";
 
 const HeroSection = async () => {
   const supabase = await createClient();
@@ -20,10 +21,18 @@ const HeroSection = async () => {
         </span>
         Autonomous Agent Now Live
       </div>
-
-      <h1 className="text-5xl md:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-linear-to-b from-white to-neutral-500">
-        GHOSTWRITER
-      </h1>
+      <div className="relative max-w-2xl mx-auto">
+        <h1 className="text-5xl z-50 relative md:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-linear-to-b from-white to-neutral-500">
+          GHOSTWRITER
+        </h1>
+        <Image
+          alt="logo"
+          src="/images/logo2.png"
+          width={200}
+          height={200}
+          className="inline-block z-0 absolute top-0 -right-32 rotate-12 opacity-80 pointer-events-none"
+        />
+      </div>
 
       <p className="text-neutral-400 max-w-xl mx-auto text-lg md:text-xl mb-10 leading-relaxed">
         The autonomous real estate strategist that turns market volatility into

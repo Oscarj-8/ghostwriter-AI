@@ -18,7 +18,9 @@ export default async function LandingPage() {
           "inset-x-0 inset-y-[-20%] top-[2%] skew-y-12",
         )}
       />
+      <div className="relative max-w-6xl mx-auto">
       <HeroSection />
+      </div>
       <Features />
       <LiveContainer />
       <Footer />
