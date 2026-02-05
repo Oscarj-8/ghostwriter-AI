@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -33,7 +33,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex h-screen bg-black w-full items-center justify-center px-4">
+    <div className="flex h-screen bg-black w-full items-center flex-col gap-4 justify-center px-4">
       <Card className="w-full max-w-sm bg-neutral-900/50 border-white/5 text-white">
         <CardHeader>
           <CardTitle className="text-2xl">Create Account</CardTitle>
@@ -97,6 +97,7 @@ export default function RegisterPage() {
           </div>
         </CardContent>
       </Card>
+      <Link href={"/"} className="text-white flex items-center gap-2 group"> <ArrowLeft className="ml-2 w-4 h-4 transition-all duration-300 ease-in-out group-hover:mr-4" /> back to home</Link>
     </div>
   );
 }

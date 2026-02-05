@@ -30,7 +30,7 @@ const HeroSection = async () => {
           src="/images/logo2.png"
           width={200}
           height={200}
-          className="inline-block z-0 absolute top-0 -right-32 rotate-12 opacity-80 pointer-events-none"
+          className="inline-block z-0 absolute top-0 -right-32 rotate-12 opacity-8npm 0 pointer-events-none"
         />
       </div>
 
