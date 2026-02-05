@@ -33,8 +33,8 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex h-screen w-full items-center justify-center px-4">
-      <Card className="w-full max-w-sm">
+    <div className="flex h-screen bg-black w-full items-center justify-center px-4">
+      <Card className="w-full max-w-sm bg-neutral-900/50 border-white/5 text-white">
         <CardHeader>
           <CardTitle className="text-2xl">Create Account</CardTitle>
           <CardDescription>
@@ -51,6 +51,7 @@ export default function RegisterPage() {
                 type="text"
                 placeholder="Abdulahi Muhammed"
                 required
+                className="border-0 bg-white/5 px-3 py-1 text-white placeholder:text-white/50 focus:ring-0"
               />
             </div>
             <div className="grid gap-2">
@@ -61,6 +62,7 @@ export default function RegisterPage() {
                 type="email"
                 placeholder="realtor@example.com"
                 required
+                className="border-0 bg-white/5 px-3 py-1 text-white placeholder:text-white/50 focus:ring-0"
               />
             </div>
             <div className="grid gap-2">
@@ -71,7 +73,7 @@ export default function RegisterPage() {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   required
-                  className="pr-10"
+                  className="pr-10 border-0 bg-white/5 px-3 py-1 text-white placeholder:text-white/50 focus:ring-0"
                 />
                 <button
                   type="button"

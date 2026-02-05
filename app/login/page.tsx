@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "../actions/login";
 import Link from "next/link";
-import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import useTogglePassword from "@/hooks/toggle-password";
 
@@ -14,8 +13,8 @@ export default function LoginPage() {
   const { showPassword, togglePassword } = useTogglePassword();
   
   return (
-    <div className="flex h-screen w-full items-center justify-center px-4">
-      <Card className="w-full max-w-sm">
+    <div className="flex h-screen bg-black w-full items-center justify-center px-4">
+      <Card className="w-full max-w-sm bg-neutral-900/50 border-white/5 text-white">
         <CardHeader>
           <CardTitle className="text-2xl">Login to Agent</CardTitle>
         </CardHeader>
@@ -23,9 +22,15 @@ export default function LoginPage() {
           <form action={login} className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" required />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                className="border-0 bg-white/5 px-3 py-1 text-white placeholder:text-white/50 focus:ring-0"
+              />
             </div>
-               <div className="grid gap-2">
+            <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Input
@@ -33,7 +38,7 @@ export default function LoginPage() {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   required
-                  className="pr-10"
+                  className="pr-10 border-0 bg-white/5 px-3 py-1 text-white placeholder:text-white/50 focus:ring-0"
                 />
                 <button
                   type="button"
