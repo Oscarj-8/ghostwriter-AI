@@ -33,19 +33,43 @@ export default function AgentDashboard() {
     loadData();
   }, []);
 
-  const saveToSupabase = async () => {
-    setLoading(true);
-    await supabase
-      .from("contacts")
-      .update({ emails: sellers })
-      .eq("type", "seller");
-    await supabase
-      .from("contacts")
-      .update({ emails: buyers })
-      .eq("type", "buyer");
+const saveToSupabase = async () => {
+  setLoading(true);
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    toast.error("You must be logged in to save settings");
     setLoading(false);
+    return;
+  }
+
+  const updateSeller = supabase
+    .from("contacts")
+    .update({ emails: sellers })
+    .eq("type", "seller")
+    .eq("user_id", user.id); 
+
+  const updateBuyer = supabase
+    .from("contacts")
+    .update({ emails: buyers })
+    .eq("type", "buyer")
+    .eq("user_id", user.id); 
+
+  const results = await Promise.all([updateSeller, updateBuyer]);
+
+  const error = results.find((r) => r.error);
+
+  if (error) {
+    toast.error("Failed to update: " + error?.error?.message);
+  } else {
     toast.success("List of emails Updated!");
-  };
+  }
+
+  setLoading(false);
+};
 
   const triggerAgent = async () => {
     setLoading(true);
