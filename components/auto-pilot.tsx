@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Label } from "./ui/label";
-import { supabase } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 import { Switch } from "./ui/switch";
 import { toast } from "sonner";
 import { User } from "@supabase/supabase-js";
@@ -11,6 +11,8 @@ const AutoPilot = () => {
   const [autoPilot, setAutoPilot] = useState(false);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+
+  const supabase = createClient();
 
   useEffect(() => {
     const initialize = async () => {

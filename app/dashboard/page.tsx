@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ClientsDB from "@/components/ui/clients-db";
 import MarketScanner from "@/components/market-scanner";
-import { supabase } from "@/lib/supabase/client";
 import AutoPilot from "@/components/auto-pilot";
 import MainHeader from "@/components/main-header";
 import { toast } from "sonner";
 import AgentActivityFeed from "@/components/agent-activity-feed";
 import { logout } from "../actions/login";
+import { createClient } from "@/lib/supabase/client";
 
 export default function AgentDashboard() {
   const [sellers, setSellers] = useState("");
@@ -21,6 +21,8 @@ export default function AgentDashboard() {
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState<any>(null);
   const [isSending, setIsSending] = useState(false);
+
+  const supabase = createClient();
 
   useEffect(() => {
     const loadData = async () => {
