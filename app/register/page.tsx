@@ -1,6 +1,7 @@
-"use client"; // Explicitly mark as client since we use form interactions
+"use client";
 
 import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -13,11 +14,13 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { signup } from "../actions/signup";
 import { useState } from "react";
+import useTogglePassword from "@/hooks/toggle-password";
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
-  // Use a client-side wrapper to call the server action
+  const { showPassword, togglePassword } = useTogglePassword();
+
   async function handleSubmit(formData: FormData) {
     setLoading(true);
     try {
@@ -39,8 +42,17 @@ export default function RegisterPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* Use the wrapper function here */}
           <form action={handleSubmit} className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="fullName">Full Name</Label>
+              <Input
+                id="fullName"
+                name="fullName"
+                type="text"
+                placeholder="Abdulahi Muhammed"
+                required
+              />
+            </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -53,7 +65,23 @@ export default function RegisterPage() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" name="password" type="password" required />
+              <div className="relative">
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={togglePassword}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3"
+                  aria-label="Toggle password visibility"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Creating Account..." : "Sign Up"}

@@ -5,13 +5,19 @@ import { redirect } from "next/navigation";
 
 export async function signup(formData: FormData) {
   const supabase = await createClient();
-
+  const name = formData.get("fullName") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      data: {
+        display_name: name,
+        full_name: name,
+      },
+    },
   });
   if (authError || !authData.user) {
     console.error("Auth Error:", authError?.message);

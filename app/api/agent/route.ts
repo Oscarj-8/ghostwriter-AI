@@ -1,4 +1,5 @@
-import { supabase } from "@/lib/supabase/admin";
+import createPrompt from "@/lib/prompt";
+import { createClient } from "@/lib/supabase/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
@@ -7,6 +8,15 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 export async function POST(req: Request) {
   try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (!user || authError) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const [contactsRes, settingsRes] = await Promise.all([
       supabase.from("contacts").select("*"),
       supabase.from("agent_settings").select("auto_pilot").eq("id", 1).single(),
@@ -46,25 +56,10 @@ export async function POST(req: Request) {
       .join("\n");
 
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
-    const prompt = `
-      You are an Autonomous Real Estate Strategist. 
-      Analyze this news: "${newsSummary}"
-
-      Task:
-      1. Decide if this is a signal for "buyers" or "sellers".
-      2. Write a short, professional email newsletter.
-      3. Provide a 'Confidence Score' (0-100).
-      4. After best regards, use my name (Abdulahi Muhammed), and also since i'm a single realator use "I, me" and do not let the user this is autonomos, they need to fee like i'm doing it for them
-
-      Return ONLY a JSON object:
-      {
-        "decision": "buyers" | "sellers",
-        "reasoning": "string",
-        "subject": "string",
-        "body": "string",
-        "confidence": number
-      }
-    `;
+    const prompt = createPrompt(
+      newsSummary,
+      user.user_metadata.full_name || user.user_metadata.display_name || "Agent",
+    );
 
     const result = await model.generateContent(prompt);
     const cleanedJson = result.response
@@ -77,9 +72,10 @@ export async function POST(req: Request) {
 
     const { error: logError } = await supabase.from("agent_logs").insert([
       {
+        user_id: user.id,
         event_type: "Daily Market Scan",
-        audience: ai.decision, 
-        news_summary: ai.subject, 
+        audience: ai.decision,
+        news_summary: ai.subject,
         ai_reasoning: ai.reasoning,
         confidence_score: ai.confidence,
         status:
@@ -97,11 +93,11 @@ export async function POST(req: Request) {
       .filter((e: string) => e.includes("@"));
 
     let status = "Drafted & Waiting Review";
-    
+
     if (isAutoPilotActive && ai.confidence > 70 && recipientArray.length > 0) {
       console.log("Sending email via Resend...");
       const { error } = await resend.emails.send({
-        from: `Abdulahi Muhammed <contact@melajobs.com>`,
+        from: `${user.user_metadata.full_name || user.user_metadata.display_name || "Agent"} <${user.email}>`,
         to: recipientArray,
         subject: ai.subject,
         text: ai.body,
@@ -119,6 +115,7 @@ export async function POST(req: Request) {
       draftSubject: ai.subject,
       draftBody: ai.body,
       newsUsed: articles[0].title,
+      user: user.email,
     });
   } catch (error: any) {
     console.error("AGENT ERROR:", error);
