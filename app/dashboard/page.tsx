@@ -81,7 +81,7 @@ const saveToSupabase = async () => {
       const data = await res.json();
       setLogs(data);
     } catch (error) {
-      console.error("Failed to run agent");
+      console.error("Failed to run agent", error);
     } finally {
       setLoading(false);
     }
@@ -109,14 +109,14 @@ const saveToSupabase = async () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-8 space-y-8">
+    <div className="max-w-6xl mx-auto p-4 space-y-8">
       <div className="flex flex-col md:flex-row items-start justify-between gap-2 md:items-center border-b pb-6">
         <MainHeader />
-        <div className="flex flex-col items-center gap-2">
-          <AutoPilot />
+        <div className="flex flex-col items-end gap-2 self-end">
           <form action={logout}>
-            <Button variant="outline">Sign Out</Button>
+            <Button variant="ghost">Sign Out</Button>
           </form>
+          <AutoPilot />
         </div>
       </div>
 

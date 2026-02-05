@@ -17,7 +17,7 @@ const FEATURES: FeaturesProps[] = [
   {
     title: "Market Intelligence",
     description:
-      "Gemini-2.5-flash-lite analyzes news to identify buyer and seller signals.",
+      "Gemini-1.5-flash analyzes news to identify buyer and seller signals.",
     icon: BrainCircuit,
     color: "text-purple-500",
     border: "hover:border-purple-500/50",
@@ -42,7 +42,7 @@ const FEATURES: FeaturesProps[] = [
 
 const Features = () => {
   return (
-    <section className="max-w-6xl mx-auto py-24 px-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <section className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-4">
       {FEATURES.map((feature, idx) => (
         <div
           key={idx}
