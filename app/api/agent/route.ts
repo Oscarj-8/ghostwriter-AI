@@ -55,11 +55,8 @@ export async function POST(req: Request) {
       )
       .join("\n");
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
-    const prompt = createPrompt(
-      newsSummary,
-      user.user_metadata.full_name || user.user_metadata.display_name || "Agent",
-    );
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+    const prompt = createPrompt(newsSummary);
 
     const result = await model.generateContent(prompt);
     const cleanedJson = result.response
@@ -94,18 +91,25 @@ export async function POST(req: Request) {
 
     let status = "Drafted & Waiting Review";
 
+    const personalizedBody = ai.body.replace(
+      "[SENDER_NAME]",
+      user.user_metadata.full_name ||
+        user.user_metadata.display_name ||
+        "Agent",
+    );
+
     if (isAutoPilotActive && ai.confidence > 70 && recipientArray.length > 0) {
       console.log("Sending email via Resend...");
       const { error } = await resend.emails.send({
         from: `${user.user_metadata.full_name || user.user_metadata.display_name || "Agent"} <${user.email}>`,
         to: recipientArray,
         subject: ai.subject,
-        text: ai.body,
+        text: personalizedBody,
         html: `<strong>Real Estate Intelligence</strong><br><br>${ai.body.replace(/\n/g, "<br>")}`,
       });
       if (error) throw new Error(error.message);
 
-      status = "Autonomously Sent to " + recipientArray.length + " recipients";
+      status = `Autonomously Sent to " + ${recipientArray.length} + " client${recipientArray.length > 1 ? "s" : ""}`;
     }
 
     return NextResponse.json({
