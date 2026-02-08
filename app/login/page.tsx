@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "../actions/login";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, ShieldAlert } from "lucide-react";
 import useTogglePassword from "@/hooks/toggle-password";
 import { useActionState } from "react";
 
@@ -58,7 +58,7 @@ export default function LoginPage() {
               </div>
             </div>
             {state?.error && (
-              <p className="text-red-500 text-sm">{state.error}</p>
+              <p className="flex gap-2 items-center text-red-500 text-sm border rounded-sm border-red-500 p-2 bg-red-900/10"><ShieldAlert /> {state.error}</p>
             )}
             <SubmitButton />
           </form>

@@ -18,7 +18,9 @@ export async function login(
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    return redirect("/login?message=Could not authneticate user");
+    return {
+      error: error.message,
+    };
   }
 
   return redirect("/dashboard");
