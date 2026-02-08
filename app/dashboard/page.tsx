@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import AgentActivityFeed from "@/components/agent-activity-feed";
 import { logout } from "../actions/login";
 import { createClient } from "@/lib/supabase/client";
+import { useUser } from "@/hooks/useUser";
 
 export default function AgentDashboard() {
   const [sellers, setSellers] = useState("");
@@ -22,6 +23,7 @@ export default function AgentDashboard() {
   const [logs, setLogs] = useState<any>(null);
   const [isSending, setIsSending] = useState(false);
 
+  const { user } = useUser();
   const supabase = createClient();
 
   useEffect(() => {
@@ -33,43 +35,43 @@ export default function AgentDashboard() {
     loadData();
   }, []);
 
-const saveToSupabase = async () => {
-  setLoading(true);
+  const saveToSupabase = async () => {
+    setLoading(true);
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!user) {
-    toast.error("You must be logged in to save settings");
+    if (!user) {
+      toast.error("You must be logged in to save settings");
+      setLoading(false);
+      return;
+    }
+
+    const updateSeller = supabase
+      .from("contacts")
+      .update({ emails: sellers })
+      .eq("type", "seller")
+      .eq("user_id", user.id);
+
+    const updateBuyer = supabase
+      .from("contacts")
+      .update({ emails: buyers })
+      .eq("type", "buyer")
+      .eq("user_id", user.id);
+
+    const results = await Promise.all([updateSeller, updateBuyer]);
+
+    const error = results.find((r) => r.error);
+
+    if (error) {
+      toast.error("Failed to update: " + error?.error?.message);
+    } else {
+      toast.success("List of emails Updated!");
+    }
+
     setLoading(false);
-    return;
-  }
-
-  const updateSeller = supabase
-    .from("contacts")
-    .update({ emails: sellers })
-    .eq("type", "seller")
-    .eq("user_id", user.id); 
-
-  const updateBuyer = supabase
-    .from("contacts")
-    .update({ emails: buyers })
-    .eq("type", "buyer")
-    .eq("user_id", user.id); 
-
-  const results = await Promise.all([updateSeller, updateBuyer]);
-
-  const error = results.find((r) => r.error);
-
-  if (error) {
-    toast.error("Failed to update: " + error?.error?.message);
-  } else {
-    toast.success("List of emails Updated!");
-  }
-
-  setLoading(false);
-};
+  };
 
   const triggerAgent = async () => {
     setLoading(true);
@@ -111,7 +113,7 @@ const saveToSupabase = async () => {
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-8">
       <div className="flex flex-col md:flex-row items-start justify-between gap-2 md:items-center border-b pb-6">
-        <MainHeader />
+        <MainHeader user={user} />
         <div className="flex flex-col items-end gap-2 self-end">
           <form action={logout}>
             <Button variant="ghost">Sign Out</Button>
