@@ -1,11 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { sendManualEmail } from "@/app/actions/email";
-import { Loader2, Trash2, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import ClientsDB from "@/components/ui/clients-db";
 import MarketScanner from "@/components/market-scanner";
 import AutoPilot from "@/components/auto-pilot";
@@ -15,12 +12,14 @@ import AgentActivityFeed from "@/components/agent-activity-feed";
 import { logout } from "../actions/login";
 import { createClient } from "@/lib/supabase/client";
 import { useUser } from "@/hooks/useUser";
+import AgentLogs, { AgentLogProps } from "@/components/agent-log";
+import AgentLogButtons from "@/components/agent-log-buttons";
 
 export default function AgentDashboard() {
   const [sellers, setSellers] = useState("");
   const [buyers, setBuyers] = useState("");
   const [loading, setLoading] = useState(false);
-  const [logs, setLogs] = useState<any>(null);
+  const [logs, setLogs] = useState<AgentLogProps | null>(null);
   const [isSending, setIsSending] = useState(false);
 
   const { user } = useUser();
@@ -137,76 +136,11 @@ export default function AgentDashboard() {
           <MarketScanner triggerAgent={triggerAgent} loading={loading} />
 
           {logs && (
-            <Card className="bg-slate-900 text-white overflow-hidden animate-in fade-in slide-in-from-bottom-4">
-              <CardHeader className="border-b border-slate-800 flex flex-row items-center justify-between">
-                <CardTitle className="text-blue-400 flex items-center gap-2">
-                  <Zap className="w-4 h-4" /> Agent Thinking Process
-                </CardTitle>
-                <Badge variant="outline" className="text-white border-white">
-                  {logs.status}
-                </Badge>
-              </CardHeader>
-              <CardContent className="pt-6 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-slate-800 p-3 rounded">
-                    <p className="text-[10px] text-slate-400 uppercase font-bold">
-                      News Analyzed
-                    </p>
-                    <p className="text-sm font-medium text-slate-200">
-                      {logs.newsUsed}
-                    </p>
-                  </div>
-                  <div className="bg-slate-800 p-3 rounded">
-                    <p className="text-[10px] text-slate-400 uppercase font-bold">
-                      Targeted Audience
-                    </p>
-                    <p className="text-sm font-bold text-blue-400 uppercase">
-                      {logs.aiDecision}
-                    </p>
-                  </div>
-                </div>
-                <div className="border-l-2 border-blue-500 pl-4 py-2 italic text-slate-300">
-                  &quot;{logs.aiReasoning}&quot;
-                </div>
-                <div className="bg-black p-4 rounded-md border border-slate-700">
-                  <p className="text-xs text-slate-500 mb-2 font-mono">
-                    --- EMAIL DRAFT GENERATED ---
-                  </p>
-                  <p className="font-bold mb-1 text-slate-200">
-                    Sub: {logs.draftSubject}
-                  </p>
-                  <p className="text-sm text-slate-400 whitespace-pre-wrap">
-                    {logs.draftBody}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+          <AgentLogs logs={logs} />
           )}
 
           {logs && logs.status === "Drafted & Waiting Review" && (
-            <div className="flex gap-4">
-              <Button
-                onClick={handleApprove}
-                disabled={isSending}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold h-12"
-              >
-                {isSending ? (
-                  <Loader2 className="animate-spin mr-2" />
-                ) : (
-                  <Zap className="w-4 h-4 mr-2" />
-                )}
-                APPROVE AND SEND NOW
-              </Button>
-
-              <Button
-                onClick={() => setLogs(null)}
-                variant="outline"
-                className="flex-1 border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 h-12"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                DISCARD
-              </Button>
-            </div>
+            <AgentLogButtons  handleApprove={handleApprove} isSending={isSending} setLogs={setLogs} />
           )}
         </div>
       </div>

@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       )
       .join("\n");
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
     const prompt = createPrompt(newsSummary);
 
     const result = await model.generateContent(prompt);
@@ -103,10 +103,11 @@ export async function POST(req: Request) {
       console.log("Sending email via Resend...");
       const { error } = await resend.emails.send({
         from: `${user.user_metadata.full_name || user.user_metadata.display_name || "Agent"} <${user.email}>`,
+        replyTo: user.email, 
         to: recipientArray,
         subject: ai.subject,
         text: personalizedBody,
-        html: `<strong>Real Estate Intelligence</strong><br><br>${ai.body.replace(/\n/g, "<br>")}`,
+        html: `<strong>Real Estate Intelligence</strong><br><br>${personalizedBody.replace(/\n/g, "<br>")}`,
       });
       if (error) throw new Error(error.message);
 
@@ -118,7 +119,7 @@ export async function POST(req: Request) {
       aiDecision: ai.decision,
       aiReasoning: ai.reasoning,
       draftSubject: ai.subject,
-      draftBody: ai.body,
+      draftBody: personalizedBody,
       newsUsed: articles[0].title,
       user: user.email,
     });
