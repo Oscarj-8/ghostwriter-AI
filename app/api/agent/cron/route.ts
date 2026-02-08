@@ -7,6 +7,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
 const resend = new Resend(process.env.RESEND_API_KEY);
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
+export interface Articles {
+  title: string;
+  description: string;
+}
+
 export async function POST(req: Request) {
   try {
     const authHeader = req.headers.get("authorization");
@@ -24,7 +29,7 @@ export async function POST(req: Request) {
       articles.length > 0
         ? articles
             .slice(0, 3)
-            .map((a: any) => `${a.title}: ${a.description}`)
+            .map((a: Articles ) => `${a.title}: ${a.description}`)
             .join("\n")
         : "Market stability continues with minimal interest rate fluctuations.";
 
@@ -82,8 +87,8 @@ export async function POST(req: Request) {
         if (emailList) {
           const recipients = emailList
             .split(",")
-            .map((e) => e.trim())
-            .filter((e) => e.includes("@"));
+            .map((e: string) => e.trim())
+            .filter((e: string) => e.includes("@"));
 
           if (recipients.length > 0) {
            const { data } = await resend.emails.send({
@@ -120,8 +125,11 @@ export async function POST(req: Request) {
     );
 
     return NextResponse.json({ message: "Processed", total: results.length });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("CRON ERROR:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const message =
+      error instanceof Error ? error.message : "Internal server error";
+
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

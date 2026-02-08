@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { Articles } from "./cron/route";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
@@ -50,7 +51,7 @@ export async function POST(req: Request) {
     const newsSummary = articles
       .slice(0, 3)
       .map(
-        (a: any) =>
+        (a: Articles) =>
           `${a.title}: ${a.description || "Market update available."}`,
       )
       .join("\n");
@@ -121,10 +122,11 @@ export async function POST(req: Request) {
       newsUsed: articles[0].title,
       user: user.email,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("AGENT ERROR:", error);
+    const message = error instanceof Error ? error.message : "Internal server error"
     return NextResponse.json(
-      { error: error.message || "Unknown error" },
+      { error: message },
       { status: 500 },
     );
   }
